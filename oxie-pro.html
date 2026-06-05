@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OXIE TOOLS PRO - 51 IN 1</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        body{background:#0f172a;color:#e2e8f0;padding:20px}
+ .container{max-width:1300px;margin:0 auto}
+        h1{text-align:center;margin:20px 0;font-size:2.5rem;background:linear-gradient(90deg,#38bdf8,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin:20px 0}
+ .tool-box{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px}
+        button{width:100%;background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:12px;border-radius:6px;cursor:pointer;transition:.2s;font-size:13px;font-weight:600}
+        button:hover{background:#38bdf8;color:#0f172a;border-color:#38bdf8}
+ .result{background:#0f172a;border:1px solid #334155;padding:10px;border-radius:6px;margin-top:8px;font-size:13px;min-height:40px;display:none;word-wrap:break-word;max-height:300px;overflow-y:auto}
+ .result.show{display:block}
+        input,textarea{width:100%;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:8px;border-radius:6px;margin:5px 0;font-size:12px}
+ .footer{text-align:center;margin-top:30px;color:#64748b}
+ .category{grid-column:1/-1;color:#38bdf8;font-weight:bold;margin-top:15px;font-size:17px;border-bottom:1px solid #334155;padding-bottom:5px}
+ .copy-btn{background:#1e293b;border:1px solid #38bdf8;color:#38bdf8;padding:4px 8px;margin:3px 0;border-radius:4px;font-size:11px;cursor:pointer;display:inline-block}
+ .font-item{background:#1e293b;padding:8px;margin:5px 0;border-radius:5px;border:1px solid #334155}
+ .font-text{font-size:16px;margin-bottom:5px}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ OXIE TOOLS PRO - 51 IN 1 ⚡</h1>
+        <p style="text-align:center;color:#94a3b8">Tap Karo - Result Wahi Dikhega | New: Fancy Fonts + FF Symbols</p>
+
+        <div class="grid" id="btnGrid"></div>
+        <div class="footer">Made with 🔥 by TechOxiee | v4.0</div>
+    </div>
+
+<script>
+const btnGrid = document.getElementById('btnGrid');
+
+const tools = [
+    // BASIC
+    {name:"🕒 Time Dekho",cat:"BASIC",fn:(id)=>show(id,`Time: ${new Date().toLocaleTimeString()}<br>Date: ${new Date().toLocaleDateString('hi-IN')}`)},
+    {name:"📅 Aaj Ka Din",cat:"BASIC",fn:(id)=>show(id,`Aaj: ${new Date().toLocaleDateString('hi-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}`)},
+    {name:"🎨 Random Color",cat:"BASIC",fn:(id)=>{let c=`#${Math.floor(Math.random()*16777215).toString(16)}`;document.body.style.background=c;show(id,`BG Color: ${c}`)}},
+    {name:"🔢 Random Number",cat:"BASIC",fn:(id)=>show(id,`Random 1-1000: ${Math.floor(Math.random()*1000)+1}`)},
+    {name:"🪙 Toss Karo",cat:"BASIC",fn:(id)=>show(id,`Toss: ${Math.random()>0.5?'Head 👑':'Tail 🪙'}`)},
+    {name:"🎲 Dice Roll",cat:"BASIC",fn:(id)=>show(id,`Dice: ${Math.floor(Math.random()*6)+1}`)},
+
+    // TEXT
+    {name:"🔠 Uppercase",cat:"TEXT",fn:(id)=>textTool(id,'upper')},
+    {name:"🔡 Lowercase",cat:"TEXT",fn:(id)=>textTool(id,'lower')},
+    {name:"📏 Word Counter",cat:"TEXT",fn:(id)=>textTool(id,'count')},
+    {name:"🔄 Reverse Text",cat:"TEXT",fn:(id)=>textTool(id,'reverse')},
+    {name:"📋 Copy Text",cat:"TEXT",fn:(id)=>textTool(id,'copy')},
+    {name:"🧹 Text Box",cat:"TEXT",fn:(id)=>{show(id,'<textarea id="txt'+id+'" rows="3" placeholder="Yahan likho..."></textarea>');}},
+    {name:"🔍 Find & Replace",cat:"TEXT",fn:(id)=>findReplace(id)},
+    {name:"✨ Fancy Fonts 100+",cat:"TEXT",fn:(id)=>fancyFonts(id)},
+
+    // SECURITY
+    {name:"🔑 Password 12",cat:"SECURITY",fn:(id)=>{let p=genPass(12);show(id,`Password: <b>${p}</b>`,p)}},
+    {name:"🔐 Password 16",cat:"SECURITY",fn:(id)=>{let p=genPass(16);show(id,`Strong Pass: <b>${p}</b>`,p)}},
+    {name:"👤 Username Gen",cat:"SECURITY",fn:(id)=>show(id,`Username: oxie_${Math.random().toString(36).slice(2,8)}`)},
+    {name:"🛡️ Base64 Encode",cat:"SECURITY",fn:(id)=>textTool(id,'b64e')},
+    {name:"🔓 Base64 Decode",cat:"SECURITY",fn:(id)=>textTool(id,'b64d')},
+    {name:"🔒 SHA-256 Hash",cat:"SECURITY",fn:(id)=>hashText(id)},
+
+    // INTERNET
+    {name:"🌐 My IP",cat:"INTERNET",fn:async(id)=>{let d=await fetch('https://api.ipify.org?format=json').then(r=>r.json());show(id,`Tera IP: ${d.ip}`)}},
+    {name:"📍 Location",cat:"INTERNET",fn:(id)=>navigator.geolocation.getCurrentPosition(p=>show(id,`Lat: ${p.coords.latitude}<br>Long: ${p.coords.longitude}`),()=>show(id,'Location denied'))},
+    {name:"🗺️ Google Map",cat:"INTERNET",fn:(id)=>{window.open('https://maps.google.com');show(id,'Map Open Ho Gaya')}},
+    {name:"📶 Speed Test",cat:"INTERNET",fn:(id)=>{window.open('https://fast.com');show(id,'Speed Test Open')}},
+    {name:"📡 Ping Google",cat:"INTERNET",fn:(id)=>show(id,`<a href="https://google.com" target="_blank">Google.com</a>`)},
+    {name:"🔗 URL Short",cat:"INTERNET",fn:(id)=>urlShort(id)},
+
+    // TIME
+    {name:"⏰ Stopwatch",cat:"TIME",fn:(id)=>startSW(id)},
+    {name:"⏳ Timer 1 Min",cat:"TIME",fn:(id)=>startTimer(id,60)},
+    {name:"⏳ Timer 5 Min",cat:"TIME",fn:(id)=>startTimer(id,300)},
+    {name:"🎂 Age Calc",cat:"TIME",fn:(id)=>ageCalc(id)},
+    {name:"📆 Days Between",cat:"TIME",fn:(id)=>daysCalc(id)},
+    {name:"🌍 World Clock",cat:"TIME",fn:(id)=>show(id,`India: ${new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata'})}<br>USA: ${new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York'})}`)},
+
+    // CONVERT
+    {name:"₹ INR to USD",cat:"CONVERT",fn:(id)=>convert(id,'inr')},
+    {name:"$ USD to INR",cat:"CONVERT",fn:(id)=>convert(id,'usd')},
+    {name:"🌡️ C to F",cat:"CONVERT",fn:(id)=>convert(id,'c2f')},
+    {name:"🌡️ F to C",cat:"CONVERT",fn:(id)=>convert(id,'f2c')},
+    {name:"📏 CM to Inch",cat:"CONVERT",fn:(id)=>convert(id,'cm')},
+    {name:"⚖️ KG to Pound",cat:"CONVERT",fn:(id)=>convert(id,'kg')},
+    {name:"💾 MB to GB",cat:"CONVERT",fn:(id)=>convert(id,'mb')},
+
+    // DEV
+    {name:"💻 Screen Size",cat:"DEV",fn:(id)=>show(id,`Width: ${screen.width}px<br>Height: ${screen.height}px<br>Viewport: ${window.innerWidth}x${window.innerHeight}`)},
+    {name:"🌐 User Agent",cat:"DEV",fn:(id)=>show(id,`${navigator.userAgent}`)},
+    {name:"🔗 QR Generator",cat:"DEV",fn:(id)=>qrGen(id)},
+    {name:"🎨 Color Picker",cat:"DEV",fn:(id)=>show(id,`<input type="color" onchange="show(${id},'Color: '+this.value)">`)},
+    {name:"📱 Device Info",cat:"DEV",fn:(id)=>show(id,`Platform: ${navigator.platform}<br>Online: ${navigator.onLine}<br>Language: ${navigator.language}`)},
+    {name:"🖼️ Lorem Image",cat:"DEV",fn:(id)=>show(id,`<img src="https://picsum.photos/300/150" width="100%">`)},
+
+    // FUN
+    {name:"😂 Random Joke",cat:"FUN",fn:async(id)=>{let j=await fetch('https://official-joke-api.appspot.com/random_joke').then(r=>r.json());show(id,`${j.setup}<br><b>${j.punchline}</b>`)}},
+    {name:"💡 OXIE Quote",cat:"FUN",fn:(id)=>{let q=['Code karo, Naam banao','Bug fix kar, Life fix ho jayegi','OXIE Tools = Life Easy','Tech se hi takde banenge'];show(id,q[Math.floor(Math.random()*q.length)])}},
+    {name:"🎯 Decision",cat:"FUN",fn:(id)=>show(id,`Decision: <b>${Math.random()>0.5?'Haan Kar De OXIE':'Abhi Rehne De'}</b>`)},
+    {name:"❤️ Love Calc",cat:"FUN",fn:(id)=>loveCalc(id)},
+    {name:"🔮 Magic 8 Ball",cat:"FUN",fn:(id)=>{let a=['Haan','Nahi','Pakkka','Shayad','Focus kar','Pooch mat'];show(id,a[Math.floor(Math.random()*a.length)])}},
+
+    // CONTACT
+    {name:"🚨 Police 100",cat:"CONTACT",fn:(id)=>show(id,`<a href="tel:100">100 Dial Karo</a>`)},
+    {name:"🚑 Ambulance 102",cat:"CONTACT",fn:(id)=>show(id,`<a href="tel:102">102 Dial Karo</a>`)},
+    {name:"🔥 Fire 101",cat:"CONTACT",fn:(id)=>show(id,`<a href="tel:101">101 Dial Karo</a>`)},
+    {name:"📞 Women 1091",cat:"CONTACT",fn:(id)=>show(id,`<a href="tel:1091">1091</a>`)},
+    {name:"👶 Child 1098",cat:"CONTACT",fn:(id)=>show(id,`<a href="tel:1098">1098</a>`)},
+    {name:"📧 Email Me",cat:"CONTACT",fn:(id)=>{window.open('mailto:techoxiee@gmail.com?subject=OXIE Tools Se');show(id,'Email Open')}},
+    {name:"📸 Instagram",cat:"CONTACT",fn:(id)=>{window.open('https://instagram.com/techoxiee');show(id,'Insta Open')}},
+    {name:"▶️ YouTube",cat:"CONTACT",fn:(id)=>{window.open('https://youtube.com/@TechOxiee');show(id,'YT Open')}},
+    {name:"💬 WhatsApp Me",cat:"CONTACT",fn:(id)=>contactWA(id)},
+
+    // YOUTUBE
+    {name:"🏷️ Tag Gen",cat:"YOUTUBE",fn:(id)=>tagGen(id)},
+    {name:"🖼️ Thumb DL",cat:"YOUTUBE",fn:(id)=>thumbDL(id)},
+    {name:"📊 Title Gen",cat:"YOUTUBE",fn:(id)=>titleGen(id)},
+    {name:"📝 Desc Gen",cat:"YOUTUBE",fn:(id)=>descGen(id)}
+];
+
+let currentCat = '';
+tools.forEach((t,i)=>{
+    if(t.cat!==currentCat){
+        currentCat=t.cat;
+        btnGrid.innerHTML+=`<div class="category">${t.cat} TOOLS</div>`;
+    }
+    btnGrid.innerHTML+=`
+        <div class="tool-box">
+            <button onclick="tools[${i}].fn(${i})">${t.name}</button>
+            <div class="result" id="res${i}"></div>
+        </div>`;
+});
+
+function show(id,html,copyText=''){
+    const res = document.getElementById('res'+id);
+    res.innerHTML = html + (copyText?`<br><button class="copy-btn" onclick="navigator.clipboard.writeText('${copyText}');this.innerText='Copied!'">Copy</button>`:'');
+    res.classList.add('show');
+}
+
+function textTool(id,type){
+    let val = document.getElementById('txt'+id)?.value || prompt('Text daalo:');
+    if(!val) return;
+    let res = '';
+    if(type=='upper') res=val.toUpperCase();
+    if(type=='lower') res=val.toLowerCase();
+    if(type=='count') res=`Words: ${val.split(/\s+/).filter(Boolean).length} | Chars: ${val.length}`;
+    if(type=='reverse') res=val.split('').reverse().join('');
+    if(type=='b64e') res=btoa(val);
+    if(type=='b64d') try{res=atob(val)}catch{res='Invalid Base64'};
+    if(type=='copy'){navigator.clipboard.writeText(val);res='Copied!'};
+    show(id,`<textarea rows="3">${res}</textarea>`,res);
+}
+
+function fancyFonts(id){
+    let name = prompt('Apna naam daalo:');
+    if(!name) return;
+
+    const styles = [
+        {name:'Bold',map:{a:'𝗮',b:'𝗯',c:'𝗰',d:'𝗱',e:'𝗲',f:'𝗳',g:'𝗴',h:'𝗵',i:'𝗶',j:'𝗷',k:'𝗸',l:'𝗹',m:'𝗺',n:'𝗻',o:'𝗼',p:'𝗽',q:'𝗾',r:'𝗿',s:'𝘀',t:'𝘁',u:'𝘂',v:'𝘃',w:'𝘄',x:'𝘅',y:'𝘆',z:'𝘇',A:'𝗔',B:'𝗕',C:'𝗖',D:'𝗗',E:'𝗘',F:'𝗙',G:'𝗚',H:'𝗛',I:'𝗜',J:'𝗝',K:'𝗞',L:'𝗟',M:'𝗠',N:'𝗡',O:'𝗢',P:'𝗣',Q:'𝗤',R:'𝗥',S:'𝗦',T:'𝗧',U:'𝗨',V:'𝗩',W:'𝗪',X:'𝗫',Y:'𝗬',Z:'𝗭'}},
+        {name:'Italic',map:{a:'𝘢',b:'𝘣',c:'𝘤',d:'𝘥',e:'𝘦',f:'𝘧',g:'𝘨',h:'𝘩',i:'𝘪',j:'𝘫',k:'𝘬',l:'𝘭',m:'𝘮',n:'𝘯',o:'𝘰',p:'𝘱',q:'𝘲',r:'𝘳',s:'𝘴',t:'𝘵',u:'𝘶',v:'𝘷',w:'𝘸',x:'𝘹',y:'𝘺',z:'𝘻',A:'𝘈',B:'𝘉',C:'𝘊',D:'𝘋',E:'𝘌',F:'𝘍',G:'𝘎',H:'𝘏',I:'𝘐',J:'𝘑',K:'𝘒',L:'𝘓',M:'𝘔',N:'𝘕',O:'𝘖',P:'𝘗',Q:'𝘘',R:'𝘙',S:'𝘚',T:'𝘛',U:'𝘜',V:'𝘝',W:'𝘞',X:'𝘟',Y:'𝘠',Z:'𝘡'}},
+        {name:'Cursive',map:{a:'𝒶',b:'𝒷',c:'𝒸',d:'𝒹',e:'ℯ',f:'𝒻',g:'ℊ',h:'𝒽',i:'𝒾',j:'𝒿',k:'𝓀',l:'𝓁',m:'𝓂',n:'𝓃',o:'ℴ',p:'𝓅',q:'𝓆',r:'𝓇',s:'𝓈',t:'𝓉',u:'𝓊',v:'𝓋',w:'𝓌',x:'𝓍',y:'𝓎',z:'𝓏',A:'𝒜',B:'ℬ',C:'𝒞',D:'𝒟',E:'ℰ',F:'ℱ',G:'𝒢',H:'ℋ',I:'ℐ',J:'𝒥',K:'𝒦',L:'ℒ',M:'ℳ',N:'𝒩',O:'𝒪',P:'𝒫',Q:'𝒬',R:'ℛ',S:'𝒮',T:'𝒯',U:'𝒰',V:'𝒱',W:'𝒲',X:'𝒳',Y:'𝒴',Z:'𝒵'}},
+        {name:'Gothic',map:{a:'𝔞',b:'𝔟',c:'𝔠',d:'𝔡',e:'𝔢',f:'𝔣',g:'𝔤',h:'𝔥',i:'𝔦',j:'𝔧',k:'𝔨',l:'𝔩',m:'𝔪',n:'𝔫',o:'𝔬',p:'𝔭',q:'𝔮',r:'𝔯',s:'𝔰',t:'𝔱',u:'𝔲',v:'𝔳',w:'𝔴',x:'𝔵',y:'𝔶',z:'𝔷',A:'𝔄',B:'𝔅',C:'ℭ',D:'𝔇',E:'𝔈',F:'𝔉',G:'𝔊',H:'ℌ',I:'ℑ',J:'𝔍',K:'𝔎',L:'𝔏',M:'𝔐',N:'𝔑',O:'𝔒',P:'𝔓',Q:'𝔔',R:'ℜ',S:'𝔖',T:'𝔗',U:'𝔘',V:'𝔙',W:'𝔚',X:'𝔛',Y:'𝔜',Z:'ℨ'}},
+        {name:'Bubble',map:{a:'ⓐ',b:'ⓑ',c:'ⓒ',d:'ⓓ',e:'ⓔ',f:'ⓕ',g:'ⓖ',h:'ⓗ',i:'ⓘ',j:'ⓙ',k:'ⓚ',l:'ⓛ',m:'ⓜ',n:'ⓝ',o:'ⓞ',p:'ⓟ',q:'ⓠ',r:'ⓡ',s:'ⓢ',t:'ⓣ',u:'ⓤ',v:'ⓥ',w:'ⓦ',x:'ⓧ',y:'ⓨ',z:'ⓩ',A:'Ⓐ',B:'Ⓑ',C:'Ⓒ',D:'Ⓓ',E:'Ⓔ',F:'Ⓕ',G:'Ⓖ',H:'Ⓗ',I:'Ⓘ',J:'Ⓙ',K:'Ⓚ',L:'Ⓛ',M:'Ⓜ',N:'Ⓝ',O:'Ⓞ',P:'Ⓟ',Q:'Ⓠ',R:'Ⓡ',S:'Ⓢ',T:'Ⓣ',U:'Ⓤ',V:'Ⓥ',W:'Ⓦ',X:'Ⓧ',Y:'Ⓨ',Z:'Ⓩ'}},
+        {name:'Square',map:{a:'🅰',b:'🅱',c:'🅲',d:'🅳',e:'🅴',f:'🅵',g:'🅶',h:'🅷',i:'🅸',j:'🅹',k:'🅺',l:'🅻',m:'🅼',n:'🅽',o:'🅾',p:'🅿',q:'🆀',r:'🆁',s:'🆂',t:'🆃',u:'🆄',v:'🆅',w:'🆆',x:'🆇',y:'🆈',z:'🆉',A:'🅰',B:'🅱',C:'🅲',D:'🅳',E:'🅴',F:'🅵',G:'🅶',H:'🅷',I:'🅸',J:'🅹',K:'🅺',L:'🅻',M:'🅼',N:'🅽',O:'🅾',P:'🅿',Q:'🆀',R:'🆁',S:'🆂',T:'🆃',U:'🆄',V:'🆅',W:'🆆',X:'🆇',Y:'🆈',Z:'🆉'}},
+        {name:'Small Caps',map:{a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ғ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',q:'ǫ',r:'ʀ',s:'s',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',x:'x',y:'ʏ',z:'ᴢ',A:'A',B:'B',C:'C',D:'D',E:'E',F:'F',G:'G',H:'H',I:'I',J:'J',K:'K',L:'L',M:'M',N:'N',O:'O',P:'P',Q:'Q',R:'R',S:'S',T:'T',U:'U',V:'V',W:'W',X:'X',Y:'Y',Z:'Z'}},
+        {name:'Upside Down',map:{a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'l',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z',A:'∀',B:'𐐒',C:'Ɔ',D:'◖',E:'Ǝ',F:'Ⅎ',G:'פ',H:'H',I:'I',J:'ſ',K:'ʞ',L:'˥',M:'W',N:'N',O:'O',P:'Ԁ',Q:'Q',R:'ᴚ',S:'S',T:'⊥',U:'∩',V:'Λ',W:'M',X:'X',Y:'⅄',Z:'Z'}},
+    ];
+
+    const ffSymbols = ['꧁༺','༻꧂','乂','〆','ツ','么','×͜×','꧁☆','☆꧂','◥','◤','ᴳᵒᵈ','乡','⚔️','☠️','🔥','⚡','👑','💀','🎯','⚜️','〖','〗','꧁࿇','࿇꧂'];
+
+    let html = `<b>${name} - 100+ Styles:</b><br><br>`;
+
+    // Basic styles
+    styles.forEach(s=>{
+        let converted = name.split('').map(char=>s.map[char]||char).join('');
+        html += `<div class="font-item"><div class="font-text">${converted}</div><button class="copy-btn" onclick="navigator.clipboard.writeText('${converted}');this.innerText='Copied!'">Copy ${s.name}</button></div>`;
+    });
+
+    // With FF Symbols
+    html += `<br><b>🔥 Free Fire Style Names:</b><br>`;
+    ffSymbols.forEach((sym,i)=>{
+        let ffName = `${sym}${name}${sym.split('').reverse().join('')}`;
+        if(i%2==0) ffName = `꧁༺${name}༻꧂`;
+        if(i==3) ffName = `乂${name}乂`;
+        if(i==5) ffName = `×͜×${name}×͜×`;
+        html += `<div class="font-item"><div class="font-text">${ffName}</div><button class="copy-btn" onclick="navigator.clipboard.writeText('${ffName}');this.innerText='Copied!'">Copy FF</button></div>`;
+    });
+
+    // Stylish combos
+    let combos = [
+        `꧁☆${name}☆꧂`,
+        `◥꧁${name}꧂◤`,
+        `ᴳᵒᵈ乡${name}乡`,
+        `⚔️${name}⚔️`,
+        `☠️${name}☠️`,
+        `🔥${name}🔥`,
+        `👑${name}👑`,
+        `💀${name}💀`,
+        `⚜️${name}⚜️`,
+        `〖${name}〗`,
+        `꧁࿇${name}࿇꧂`,
+        `乂${name}ツ`,
+        `×͜×${name}×͜×`,
+        `꧁༒${name}༒꧂`,
+        `『${name}』`,
+    ];
+
+    html += `<br><b>💎 VIP Styles:</b><br>`;
+    combos.forEach(c=>{
+        html += `<div class="font-item"><div class="font-text">${c}</div><button class="copy-btn" onclick="navigator.clipboard.writeText('${c}');this.innerText='Copied!'">Copy</button></div>`;
+    });
+
+    show(id,html);
+}
+
+function genPass(l){let c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";return Array(l).fill().map(()=>c[Math.floor(Math.random()*c.length)]).join('')}
+function startSW(id){let s=0;show(id,`<h3 id="sw${id}">0</h3><button onclick="clearInterval(window.swint${id})">Stop</button>`);window['swint'+id]=setInterval(()=>{s++;document.getElementById('sw'+id).innerText=s},1000)}
+function startTimer(id,sec){show(id,`<h3 id="tm${id}">${sec}</h3>`);let i=setInterval(()=>{sec--;document.getElementById('tm'+id).innerText=sec;if(sec<=0){clearInterval(i);alert('Time Up!')}},1000)}
+function ageCalc(id){let d=prompt('DOB: DD-MM-YYYY');if(d){let[dd,mm,yy]=d.split('-').map(Number);let age=new Date().getFullYear()-yy;show(id,`Age: ${age} years`)}}
+function daysCalc(id){let d1=prompt('Date 1: DD-MM-YYYY');let d2=prompt('Date 2: DD-MM-YYYY');if(d1&&d2){let[dd1,mm1,yy1]=d1.split('-').map(Number);let[dd2,mm2,yy2]=d2.split('-').map(Number);let diff=Math.abs(new Date(yy2,mm2-1,dd2)-new Date(yy1,mm1-1,dd1));show(id,`Days: ${Math.ceil(diff/(1000*60*60*24))}`)}}
+function convert(id,t){let v=prompt('Value daalo:');if(!v)return;v=parseFloat(v);let r='';if(t=='inr')r=`$${(v/83).toFixed(2)} USD`;if(t=='usd')r=`₹${(v*83).toFixed(2)} INR`;if(t=='c2f')r=`${(v*9/5+32).toFixed(2)}°F`;if(t=='f2c')r=`${((v-32)*5/9).toFixed(2)}°C`;if(t=='cm')r=`${(v/2.54).toFixed(2)} inch`;if(t=='kg')r=`${(v*2.204).toFixed(2)} lbs`;if(t=='mb')r=`${(v/1024).toFixed(2)} GB`;show(id,r)}
+function qrGen(id){let t=prompt('Text/Link:');if(t)show(id,`<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t)}" width="100%">`)}
+function loveCalc(id){let n1=prompt('Pehla Naam:');let n2=prompt('Dusra Naam:');if(n1&&n2)show(id,`${n1} ❤️ ${n2} = <b>${Math.floor(Math.random()*50)+50}%</b>`)}
+function contactWA(id){let m=prompt('Message:');if(m){window.open(`https://wa.me/?text=${encodeURIComponent(m+' - via OXIE Tools')}`);show(id,'WhatsApp Open')}}
+function tagGen(id){let t=prompt('Topic:');if(t)show(id,`<textarea rows="4">${t}, ${t} video, ${t} tutorial, techoxiee, oxie tools, ${t} kaise kare, ${t} tips</textarea>`)}
+function thumbDL(id){let u=prompt('YT URL:');if(u){let vid=u.split('v=')[1]?.split('&')[0]||u.split('youtu.be/')[1]?.split('?')[0];if(vid)show(id,`<img src="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" width="100%"><br><a href="https://img.youtube.com/vi/${vid}/maxresdefault.jpg" download>Download</a>`)}}
+function titleGen(id){let t=prompt('Topic:');if(t)show(id,`1. ${t} - Full Guide 2026<br>2. ${t} Kaise Kare?<br>3. ${t} | 5 Min Me`)}
+function descGen(id){let t=prompt('Topic:');if(t)show(id,`<textarea rows="5">🔥 ${t} ki video\n\n✅ Seekho:\n- ${t} kya hai\n- ${t} kaise use kare\n\n📌 OXIE Tools: [link]\n#techoxiee</textarea>`)}
+function findReplace(id){let t=prompt('Text:');let f=prompt('Kya dhundna:');let r=prompt('Replace:');if(t&&f)show(id,t.replaceAll(f,r))}
+function urlShort(id){let u=prompt('URL:');if(u){window.open(`https://tinyurl.com/create.php?url=${encodeURIComponent(u)}`);show(id,'Short URL Open')}}
+async function hashText(id){let v=prompt('Text:');if(!v)return;let e=new TextEncoder().encode(v);let h=await crypto.subtle.digest('SHA-256',e);show(id,'SHA-256: '+Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''))}
+</script>
+</body>
+</html>
